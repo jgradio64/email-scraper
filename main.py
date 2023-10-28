@@ -28,6 +28,12 @@ def process_payloads(payload):
         
 
 def build_date(days_ago):
+    '''
+    Purpose: Builds a date string for the mail search function
+    Input: An integer that indicates how far back you want to check
+    Output: A string in the format 'day-month-year', uses textual shorthand for month.
+    Output example: "01-Jan-1990"
+    '''
     today = datetime.datetime.now()
     target_date = today - datetime.timedelta(days = days_ago)
     day = target_date.day
@@ -66,7 +72,6 @@ def search_emails(email_name):
             sender = email_message['From']
             subject = decode_subject(email_message['Subject'])
 
-            # 
             if ("statement" in subject):
                 result, data = mail.fetch(str(uids[0]), '(RFC822.TEXT)')
                 raw_email = data[0][1]
