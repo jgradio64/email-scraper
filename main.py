@@ -1,6 +1,7 @@
 from itertools import chain
 from dotenv import load_dotenv
 from email import policy
+from email.header import decode_header
 import datetime
 import time
 import email
@@ -43,20 +44,49 @@ def build_date(days_ago):
     return date_string
 
 
-def decode_subject(encoded_subject):
-    # Split the string into parts and decode each part
-    decoded_parts = email.header.decode_header(encoded_subject)
+def helper_decode(encoded_array):
+    result = encoded_array
+    # Decode any byte strings.
+    for x in range(len(result)):
+        if isinstance(result[x], bytes):
+            result[x] = result[x].decode('utf-8')
+        elif isinstance(x, str):
+            pass
+    return result
 
-    # Reconstruct and decode the string
-    decoded_string = ''
-    for part, charset in decoded_parts:
-        if charset is not None:
-            decoded_string += part
-        else:
-            # If charset is None, assume UTF-8
-            decoded_string += part
 
-    return decoded_string
+def flatten(array):
+    return [e for l in array for e in l]
+
+
+def helper_filter(array):
+    result = array
+    if "utf-8" in result:
+        result.remove("utf-8")
+    if None in result:
+        result.remove(None)
+    return result
+
+
+def retrieve_single_email(uid):
+    result, data = mail.fetch(str(uid), '(RFC822)')
+    raw_email = data[0][1]
+    email_message = email.message_from_bytes(raw_email)
+    sender = decode_header(email_message['From'])
+    subject = decode_header(email_message['Subject'])
+    # Flatten the list of tuples into just a list
+    # Then get just the part that has the email address
+    sender = flatten(sender)
+    subject = flatten(subject)
+
+    sender = helper_decode(sender)
+    subject = helper_decode(subject)
+
+    sender = helper_filter(sender)
+    subject = helper_filter(subject)
+
+    print(sender)
+    print(subject)
 
 
 def search_emails(email_name):
@@ -66,28 +96,15 @@ def search_emails(email_name):
     uids = [int(s) for s in data[0].split()]
     if uids:
         for uid in uids:
-            result, data = mail.fetch(str(uids[0]), '(RFC822)')
-            raw_email = data[0][1]
-            email_message = email.message_from_bytes(raw_email)
-            sender = email_message['From']
-            subject = decode_subject(email_message['Subject'])
-
-            if ("statement" in subject):
-                result, data = mail.fetch(str(uids[0]), '(RFC822.TEXT)')
-                raw_email = data[0][1]
-                email_message = email.message_from_bytes(raw_email, policy=email.policy.default)
-                body = process_payloads(email_message.get_payload())
-                body = decode_subject(body)
-                print("FROM: " + sender + "\nSUBJECT: " + subject + "\nBODY:\n" + "You have a new statement.")
-            else:
-                print("FROM: " + sender + "\nSUBJECT: " + subject)
+            retrieve_single_email(uid)
+            
 
 load_dotenv()
 
-imap_ssl_host = 'imap.gmail.com'
+imap_ssl_host = os.getenv('GMAIL_SSL_HOST')
 imap_ssl_port = 993
-username = os.getenv('EMAIL_ADDRESS')
-password = os.getenv('PASSWORD')
+username = os.getenv('GMAIL_EMAIL_ADDRESS')
+password = os.getenv('GMAIL_PASSWORD')
 
 uid_max = 0
 
@@ -98,6 +115,6 @@ mail.select('inbox')
 
 search_emails("citi")
 
-#Logout before running the while loop
+#Logout of the mail server
 mail.logout()
 
