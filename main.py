@@ -68,6 +68,14 @@ def helper_filter(array):
     return result
 
 
+def extract_email_address(sender_array):
+    res = [i.find('@') for i in sender_array]
+    for x in range(len(res)):
+        if(res[x] > 0):
+            return sender_array[x]
+    
+
+
 def retrieve_single_email(uid):
     result, data = mail.fetch(str(uid), '(RFC822)')
     raw_email = data[0][1]
@@ -85,8 +93,11 @@ def retrieve_single_email(uid):
     sender = helper_filter(sender)
     subject = helper_filter(subject)
 
-    print(sender)
-    print(subject)
+    sender_address = extract_email_address(sender)
+    subject = subject[0]
+
+    print("From: " + sender_address)
+    print("\t" + subject)
 
 
 def search_emails(email_name):
