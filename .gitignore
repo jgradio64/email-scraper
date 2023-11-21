@@ -1,5 +1,4 @@
 .env
-*.txt
 launch.json
 test.py
 senders.json
