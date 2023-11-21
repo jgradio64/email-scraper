@@ -1,6 +1,4 @@
-from itertools import chain
 from dotenv import load_dotenv
-from email import policy
 from email.header import decode_header
 import datetime
 import email
