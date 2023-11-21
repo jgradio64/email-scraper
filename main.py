@@ -7,25 +7,9 @@ import time
 import email
 import imaplib
 import base64
+import json
 import os
 import re
-
-
-def process_payloads(payload):
-    if isinstance(payload, list):
-        for sub_payload in payload:
-            process_payloads(sub_payload)
-    elif isinstance(payload, list):
-        for sub_payload in payload:
-            process_payloads(sub_payload)
-    elif isinstance(payload, str):
-        # Handle the text content
-        return payload
-    else:
-        content_type = payload.get_content_type()
-        if content_type == "text/plain":
-            payload_text = payload.get_content()
-            return payload_text
         
 
 def build_date(days_ago):
@@ -101,7 +85,7 @@ def retrieve_single_email(uid):
 
 
 def search_emails(email_name):
-    search_string = '(FROM "'+ email_name +'" SENTSINCE ' + build_date(11) + ')'
+    search_string = '(FROM "'+ email_name +'" SENTSINCE ' + build_date(4) + ')'
 
     result, data = mail.search( None, search_string)
     uids = [int(s) for s in data[0].split()]
@@ -109,6 +93,13 @@ def search_emails(email_name):
         for uid in uids:
             retrieve_single_email(uid)
             
+
+def check_senders():
+    f = open("senders.json")
+    senders = json.load(f)
+    for sender in senders:
+        search_emails(sender)
+
 
 load_dotenv()
 
@@ -124,8 +115,7 @@ mail.login(username, password)
 #select the folder
 mail.select('inbox')
 
-search_emails("citi")
+check_senders()
 
 #Logout of the mail server
 mail.logout()
-
