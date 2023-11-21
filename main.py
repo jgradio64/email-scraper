@@ -3,13 +3,10 @@ from dotenv import load_dotenv
 from email import policy
 from email.header import decode_header
 import datetime
-import time
 import email
 import imaplib
-import base64
 import json
 import os
-import re
         
 
 def build_date(days_ago):
