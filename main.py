@@ -5,17 +5,17 @@ import email
 import imaplib
 import json
 import os
-        
+
 
 def build_date(days_ago):
-    '''
+    """
     Purpose: Builds a date string for the mail search function
     Input: An integer that indicates how far back you want to check
     Output: A string in the format 'day-month-year', uses textual shorthand for month.
     Output example: "01-Jan-1990"
-    '''
+    """
     today = datetime.datetime.now()
-    target_date = today - datetime.timedelta(days = days_ago)
+    target_date = today - datetime.timedelta(days=days_ago)
     day = target_date.day
     month = target_date.strftime('%b')
     year = target_date.year
@@ -50,9 +50,8 @@ def helper_filter(array):
 def extract_email_address(sender_array):
     res = [i.find('@') for i in sender_array]
     for x in range(len(res)):
-        if(res[x] > 0):
+        if res[x] > 0:
             return sender_array[x]
-    
 
 
 def retrieve_single_email(uid):
@@ -80,14 +79,14 @@ def retrieve_single_email(uid):
 
 
 def search_emails(email_name):
-    search_string = '(FROM "'+ email_name +'" SENTSINCE ' + build_date(4) + ')'
+    search_string = '(FROM "' + email_name + '" SENTSINCE ' + build_date(4) + ')'
 
-    result, data = mail.search( None, search_string)
+    result, data = mail.search(None, search_string)
     uids = [int(s) for s in data[0].split()]
     if uids:
         for uid in uids:
             retrieve_single_email(uid)
-            
+
 
 def check_senders():
     f = open("senders.json")
@@ -98,19 +97,19 @@ def check_senders():
 
 load_dotenv()
 
-imap_ssl_host = os.getenv('GMAIL_SSL_HOST')
+imap_ssl_host = os.getenv('YAHOO_SSL_HOST')
 imap_ssl_port = 993
-username = os.getenv('GMAIL_EMAIL_ADDRESS')
-password = os.getenv('GMAIL_PASSWORD')
+username = os.getenv('YAHOO_EMAIL_ADDRESS')
+password = os.getenv('YAHOO_PASSWORD')
 
 uid_max = 0
 
 mail = imaplib.IMAP4_SSL(imap_ssl_host)
 mail.login(username, password)
-#select the folder
+# select the folder
 mail.select('inbox')
 
 check_senders()
 
-#Logout of the mail server
+# Logout of the mail server
 mail.logout()
