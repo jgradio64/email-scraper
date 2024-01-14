@@ -2,5 +2,5 @@
 launch.json
 test.py
 senders.json
-/venv/
 /.vscode/
+/env
