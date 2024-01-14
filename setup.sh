@@ -10,3 +10,6 @@ source env/bin/activate
 
 # Install package requirements
 pip install -r requirements.txt
+
+# Exit virtual environment
+deactivate
