@@ -7,6 +7,7 @@ import json
 import os
 
 
+# keep in this file and pass it in to the retrieve emails folder.
 def build_date(days_ago):
     """
     Purpose: Builds a date string for the mail search function
@@ -23,6 +24,7 @@ def build_date(days_ago):
     return date_string
 
 
+# goes in new file
 def helper_decode(encoded_array):
     result = encoded_array
     # Decode any byte strings.
@@ -34,10 +36,12 @@ def helper_decode(encoded_array):
     return result
 
 
+# goes in new file.
 def flatten(array):
     return [e for l in array for e in l]
 
 
+# filter goes in new file
 def helper_filter(array):
     result = array
     if "utf-8" in result:
@@ -47,6 +51,7 @@ def helper_filter(array):
     return result
 
 
+# New file
 def extract_email_address(sender_array):
     res = [i.find('@') for i in sender_array]
     for x in range(len(res)):
@@ -54,12 +59,14 @@ def extract_email_address(sender_array):
             return sender_array[x]
 
 
+# move to new file
 def retrieve_single_email(uid):
     result, data = mail.fetch(str(uid), '(RFC822)')
     raw_email = data[0][1]
     email_message = email.message_from_bytes(raw_email)
     sender = decode_header(email_message['From'])
     subject = decode_header(email_message['Subject'])
+
     # Flatten the list of tuples into just a list
     # Then get just the part that has the email address
     sender = flatten(sender)
@@ -76,8 +83,10 @@ def retrieve_single_email(uid):
 
     print("From: " + sender_address)
     print("\t" + subject)
+    # Send message to phone number + carrier here.
 
 
+# move to new file
 def search_emails(email_name):
     search_string = '(FROM "' + email_name + '" SENTSINCE ' + build_date(4) + ')'
 
@@ -88,6 +97,7 @@ def search_emails(email_name):
             retrieve_single_email(uid)
 
 
+# Keep this in the main file. As we will loop over all the senders to search from emails from them.
 def check_senders():
     f = open("senders.json")
     senders = json.load(f)
@@ -97,12 +107,10 @@ def check_senders():
 
 load_dotenv()
 
-imap_ssl_host = os.getenv('YAHOO_SSL_HOST')
+imap_ssl_host = os.getenv('YAHOO_IMAP_HOST')
 imap_ssl_port = 993
 username = os.getenv('YAHOO_EMAIL_ADDRESS')
 password = os.getenv('YAHOO_PASSWORD')
-
-uid_max = 0
 
 mail = imaplib.IMAP4_SSL(imap_ssl_host)
 mail.login(username, password)
