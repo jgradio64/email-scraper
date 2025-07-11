@@ -1,5 +1,11 @@
 # Email Notification Scraper
 
+
+## Motivation
+
+This project was created to restore reliable mobile notifications for time-sensitive account updates after a vendor removed SMS support. Rather than rely on costly or less flexible solutions, I built my own lightweight system using Python and standard email protocols.
+
+## Main Parts
 This Python application retrieves recent emails from an IMAP server (Gmail or Yahoo), parses their subject lines, and forwards them to a mobile phone via email-to-text (SMTP). The tool is intended as a lightweight notification system for critical updates (e.g., account activity or billing alerts) that would otherwise be missed due to lack of native SMS support.
 Project Structure
 * `main.py`: Entry point for the program. Loads environment variables, initiates email retrieval and forwarding.
@@ -7,11 +13,11 @@ Project Structure
 * `notification_sender.py`: Uses Python’s `smtplib` to send parsed messages to a mobile device via email-to-text gateway.
 * `helper_functions.py`: Utility functions for date range building, encoding fixes (e.g., UTF-8 decoding), and other parsing tasks.
 
-# Scripts
+## Scripts
 * `setup.sh`: Creates a virtual environment and installs dependencies.
 * `run.sh`: Activates the environment and runs the main script.
 
-# Tech Stack
+## Tech Stack
 * Python 3
 * `imaplib`, `email`, `smtplib`, `json` (standard library)
 * Bash for environment setup and execution
